@@ -6,7 +6,7 @@ sys.path.append(target_dir)
 from LinkerHand.linker_hand_api import LinkerHandApi
 
 
-def hand_exec(hand:LinkerHandApi, pose, speed, delay=5, err_thr=10):
+def hand_exec(hand:LinkerHandApi, pose, speed, delay=5, err_thr=2):
     hand.set_speed(speed=speed)
     hand.finger_move(pose=pose)
     
@@ -57,6 +57,17 @@ poses_get_bottle = [
     # [255,0,105,96,105,110,255,255,255,121]
     [180,0,147,137,149,155,255,255,255,121]
 ]
+
+
+single_finger_test = [
+    [255, 0, 255, 255, 255, 255, 255, 255, 255, 121],
+    [0, 0, 255, 255, 255, 255, 255, 255, 255, 121],
+    [255, 0, 0, 255, 255, 255, 255, 255, 255, 121],
+    [255, 0, 255, 0, 255, 255, 255, 255, 255, 121],
+    [255, 0, 255, 255, 0, 255, 255, 255, 255, 121],
+    [255, 0, 255, 255, 255, 0, 255, 255, 255, 121]
+]
+
 
 def get_sync_speed(current_pose:list, target_pose:list, reference_speed:int):
     reference_dist = target_pose[2]-current_pose[2]
@@ -131,28 +142,34 @@ def get_cylinder(hand:LinkerHandApi):
     print('力矩为：',torque)
 
 
+speed_full = [255, 255, 102, 255, 255, 255, 255, 255, 255, 255]
+
 def test():
 
     hand = LinkerHandApi(hand_type="right", hand_joint="L10")
 
+    # t_open = []
+    # t_close = []
+    for i in range(2):
+        time.sleep(1)
+        # torque = hand.get_torque()
+        print('打开')
+        # print(torque)
+        hand_exec(hand,single_finger_test[0],speed_full)
 
-    torque = hand.get_torque()
-    print(torque)
-    hand_exec(hand,pose_ready,speed_ready)
-
-    time.sleep(1)
-
-    hand_exec(hand,poses_get_bottle[0],speed_ready)
-    time.sleep(0.5)
-    hand_exec(hand,poses_get_bottle[1],[10,10,10,10,10])
-    torque = hand.get_force()
-    print(torque)
+        time.sleep(1)
+        print('弯曲')
+        hand_exec(hand,single_finger_test[2],speed_full)
+    # time.sleep(0.5)
+    # hand_exec(hand,poses_get_bottle[1],[10,10,10,10,10])
+    # torque = hand.get_force()
+    # print(torque)
 
 
 if __name__ == '__main__':
-    # test()
-    hand = LinkerHandApi(hand_type="right", hand_joint="L10")
+    test()
+    # hand = LinkerHandApi(hand_type="right", hand_joint="L10")
 
-    get_cylinder(hand)
+    # get_cylinder(hand)
     # time.sleep(2)
     # drop_cylinder(hand)

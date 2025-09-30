@@ -57,7 +57,7 @@ def bag_demo(jaka, hand:LinkerHandApi, type):
 
     # 张开灵巧手
     # hand_ctrl.drop(hand,hand_move_points)
-    hand_ctrl.sync_exec(hand,hand_move_points[0],dt=2)
+    hand_ctrl.sync_exec(hand,hand_move_points[0],dt=0.5)
 
 
     print(f"按空格键开始抓取 [{type_str}]")
@@ -69,7 +69,7 @@ def bag_demo(jaka, hand:LinkerHandApi, type):
     jaka.linear_move(jaka_move_points[1],0,True,300)
     
     # 控制灵巧手执行抓取动作
-    ret = hand_ctrl.sync_exec(hand,hand_move_points[1],dt=2)
+    ret = hand_ctrl.sync_exec(hand,hand_move_points[1],dt=0.5)
     if ret != 1:
         print('手指未到位')
         return 0
@@ -90,6 +90,8 @@ def bag_demo(jaka, hand:LinkerHandApi, type):
     hand_ctrl.sync_exec(hand,hand_move_points[2],dt=t, Torque=hand_torque)
     print('当前力矩为：',hand.get_torque())
     
+    print(f"按空格键抬起来 [{type_str}]")
+    keyboard.wait('space')
     time.sleep(1)
     
     # 控制灵巧手回到抓取上方
@@ -104,7 +106,7 @@ def bag_demo(jaka, hand:LinkerHandApi, type):
     jaka.linear_move(jaka_move_points[1],0,True,300)
     
     # 张开灵巧手
-    hand_ctrl.sync_exec(hand,hand_move_points[0],dt=2)
+    hand_ctrl.sync_exec(hand,hand_move_points[0],dt=0.5)
     # hand_ctrl.drop(hand,hand_move_points)
 
     # 控制灵巧手回到抓取上方
@@ -242,7 +244,7 @@ def crawl_box_demo(jaka,hand):
     # 张开灵巧手
     hand_ctrl.drop(hand,hand_teach_point.poses_get_box)
 
-    # 控制灵巧手回到抓取上方
+    # 控制灵巧手回到抓取上方    
     jaka.linear_move(jaka_points.get_box[0],0,True,300)
     
 
@@ -252,12 +254,17 @@ def main():
 
     jaka = jkrc.RC("10.5.5.100")
     jaka.login()
-    # crawl_box_demo(jaka,hand)
-    # crawl_cylinder_demo(jaka,hand)
-    # crawl_demo(jaka,hand,1)
-    # pose = jaka.get_tcp_position() 
-    # print(pose)  4
-    bag_demo(jaka,hand,2)
-
+ 
+    '''
+    mission_type: 
+        0: 拿水瓶
+        1: 拿纸巾
+        2: 拿装有软体零件的塑料袋
+    '''
+    mission_type = 1
+    for i in range(1):
+        bag_demo(jaka,hand,type=mission_type)     
+    
+     
 if __name__ == '__main__': 
     main()
